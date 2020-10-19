@@ -1,0 +1,140 @@
+    <table class="table table-bordered table-hover ">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Comment_post_id</th>
+            <th>Author</th>
+            <th>Email</th>
+            <th>Content</th>
+            <th>Status</th>
+            <th>In reponse to</th>
+            <th>Date</th>
+            <th>Approve</th>
+            <th>Unapprove</th>
+            <th>Delete</th>
+
+
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+       
+        global $connection;
+        $sql = "SELECT * FROM comments";
+        $result_query = mysqli_query($connection, $sql);
+
+        while($row = mysqli_fetch_assoc($result_query)) {
+            $comment_id = $row['comment_id'];
+            $comment_post_id = $row['comment_post_id'];
+            $comment_author = $row['comment_author'];
+            $comment_email = $row['comment_email'];
+            $comment_content = $row['comment_content'];
+            $comment_status = $row['comment_status'];
+            $comment_date = $row['comment_date'];
+
+            
+            echo "   <tr>";
+            echo " <td>$comment_id</td>";
+    
+
+            echo "<td>$comment_post_id</td>";
+            echo "<td>{$comment_author}</td>";
+            echo "<td>{$comment_email}</td>";
+            
+            
+            echo"<td style=\"word-break:break-all;\">{$comment_content}</td>";
+            
+
+            echo "<td>{$comment_status}</td>";
+
+
+    
+    $sqls = "SELECT * FROM posts WHERE post_id = $comment_post_id ";
+    $result = mysqli_query($connection, $sqls);
+    while($row = mysqli_fetch_assoc($result)){
+        $post_id = $row['post_id'];
+        $post_title = $row['post_title'];
+
+        echo"<td><a href='../post.php?p_id=$post_id'>$post_title</a></td>";
+
+    }
+
+            echo "<td>{$comment_date}</td>";
+
+
+            echo"<td><a href=\"comments.php?approve=$comment_id\">
+            <button class=\"btn btn-danger\">Approve</button></a></td>";
+
+
+            echo" <td><a href=\"comments.php?unapprove=$comment_id\">
+                <button class=\"btn btn-warning\">Unapprove</button></a></td>";
+
+            echo"<td><a href=\"comments.php?delete=$comment_id\">
+            <button class=\"btn btn-danger\">Delete</button></a></td>";
+
+
+        }
+    //approve comment
+    if(isset($_GET['approve'])){
+        $comment_approve = $_GET['approve'];
+
+        global $connection;
+        $sql = "UPDATE comments SET comment_status = 'approved' WHERE comment_id = $comment_approve";
+        $result_query = mysqli_query($connection, $sql);
+
+        $num = mysqli_affected_rows($connection);
+
+        if($num> 0){
+            echo"	<div class='alert alert-danger'>
+  <strong>Success!</strong> .
+</div>";
+            header("Location: comments.php");
+        }
+
+
+    }
+    //unapprove comment
+    if(isset($_GET['unapprove'])){
+        $comment_unapprove = $_GET['unapprove'];
+
+
+        global $connection;
+        $sql = "UPDATE comments SET comment_status = 'unapproved' WHERE comment_id = $comment_unapprove";
+        $result_query = mysqli_query($connection, $sql);
+
+        $num = mysqli_affected_rows($connection);
+
+        if($num> 0){
+            echo"	<div class='alert alert-danger'>
+  <strong>Success!</strong> .
+</div>";
+            header("Location: comments.php");
+        }
+
+
+    }
+//comments delete
+    if(isset($_GET['delete'])){
+        global $connection;
+        $sql = "DELETE FROM comments WHERE comment_id = ". $_GET['delete']. " ";
+        $result_query = mysqli_query($connection, $sql);
+
+        $num = mysqli_affected_rows($connection);
+
+        if($num> 0){
+            echo"	<div class='alert alert-danger'>
+                <strong>Success!</strong> .
+                </div>";
+            header("Refresh: 3;");
+        }
+
+
+    }
+    ?>
+     </tbody>
+
+    </table>
+
+
+
+
